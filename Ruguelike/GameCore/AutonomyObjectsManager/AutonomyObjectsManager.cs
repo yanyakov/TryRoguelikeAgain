@@ -35,14 +35,12 @@ namespace Ruguelike.GameCore.AutonomyObjectsManager
         public void UpdateAll()
         {
             var autonomousObjects = gameSceneRepository.GameObjects(obj => obj is IAutoObject).Cast<IAutoObject>().ToList();
+            
             foreach (var autoObject in autonomousObjects)
-            {
-                autoObject.Update(gameSceneRepository);
-            }
+               autoObject.Update(gameSceneRepository);
+            
         }
-        ~AutonomyObjectsManager()
-        {
-            eventManager.UnsubscribeFromShoot(CreateAndAddBullet);
-        }
+
+        ~AutonomyObjectsManager() => eventManager.UnsubscribeFromShoot(CreateAndAddBullet);
     }
 }

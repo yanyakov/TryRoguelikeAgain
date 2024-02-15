@@ -6,10 +6,7 @@ namespace Ruguelike.GameSceneRepository
     {
         private readonly List<IGameObject> gameObjects = [];
 
-        public void Add(IGameObject gameObject)
-        {
-            gameObjects.Add(gameObject);
-        }
+        public void Add(IGameObject gameObject) => gameObjects.Add(gameObject);
 
         public bool Remove(Guid id)
         {
@@ -17,18 +14,10 @@ namespace Ruguelike.GameSceneRepository
             return obj != null && gameObjects.Remove(obj);
         }
 
-        public IGameObject? FindById(Guid id)
-        {
-            return gameObjects.FirstOrDefault(obj => obj.Id == id);
-        }
+        public IGameObject? FindById(Guid id) => gameObjects.FirstOrDefault(obj => obj.Id == id);
 
-        public IEnumerable<IGameObject> GameObjects(Func<IGameObject, bool> predicate)
-        {
-            return gameObjects.Where(predicate).Reverse().ToList();
-        }
-        public void Clear()
-        {
-            gameObjects.Clear();
-        }
+        public IEnumerable<IGameObject> GameObjects(Func<IGameObject, bool> predicate) => gameObjects.Where(predicate).Reverse().ToList();
+
+        public void Clear() => gameObjects.Clear();
     }
 }

@@ -4,7 +4,11 @@ using Ruguelike.GameSceneRepository;
 
 namespace Ruguelike.MazeGenerator
 {
-    public class MazeGenerator(IGameConfig config, IGameSceneRepository gameScene, IPrototypeFactory factory) : IMazeGenerator
+    public class MazeGenerator(
+        IGameConfig config, 
+        IGameSceneRepository gameScene, 
+        IPrototypeFactory factory
+        ) : IMazeGenerator
     {
         private readonly IGameConfig config = config;
         private readonly IGameSceneRepository gameScene = gameScene;
@@ -30,10 +34,7 @@ namespace Ruguelike.MazeGenerator
                     maze[x, y] = true;
         }
 
-        private Position GetPositionById(Guid id, string errorMessage)
-        {
-            return gameScene.FindById(id)?.Position ?? throw new InvalidOperationException(errorMessage);
-        }
+        private Position GetPositionById(Guid id, string errorMessage) => gameScene.FindById(id)?.Position ?? throw new InvalidOperationException(errorMessage);
 
         private void CarvePassagesFrom(Position current, bool[,] maze)
         {
@@ -45,6 +46,7 @@ namespace Ruguelike.MazeGenerator
             {
                 Position newPos = current + direction;
                 Position between = current + direction / 2;
+
                 if (IsInsideBounds(newPos) && maze[newPos.X, newPos.Y])
                 {
                     maze[between.X, between.Y] = false;
@@ -58,6 +60,7 @@ namespace Ruguelike.MazeGenerator
             foreach (var direction in new Position[] { new(0, -1), new(1, 0), new(0, 1), new(-1, 0), new(0, 0) })
             {
                 Position newPos = finish + direction;
+
                 if (IsInsideBounds(newPos))
                     maze[newPos.X, newPos.Y] = false;
             }
@@ -80,9 +83,7 @@ namespace Ruguelike.MazeGenerator
             }
             return positions;
         }
-        private bool IsInsideBounds(Position position)
-        {
-            return position.X > 0 && position.X < config.MapWidth - 1 && position.Y > 0 && position.Y < config.MapHeight - 1;
-        }
+        private bool IsInsideBounds(Position position) => 
+            position.X > 0 && position.X < config.MapWidth - 1 && position.Y > 0 && position.Y < config.MapHeight - 1;
     }
 }

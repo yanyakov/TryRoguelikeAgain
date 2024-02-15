@@ -1,7 +1,6 @@
 ﻿using Ruguelike.GameCore.AiController;
 using Ruguelike.GameCore.AutonomyObjectsManager;
 using Ruguelike.GameCore.CollisionManager;
-using Ruguelike.GameCore.EventManager;
 using Ruguelike.GameCore.GameController;
 using Ruguelike.GameCore.GameInitializer;
 using Ruguelike.GameCore.GameRenderer;
@@ -9,15 +8,15 @@ using Ruguelike.GameSceneRepository;
 
 namespace Ruguelike.GameCore.GameLoop
 {
-    public class GameLoop(  IGameConfig config, 
-                            ICollisionManager collisionManager, 
-                            IGameRender renderer, 
-                            IGameController controller, 
-                            IGameInitializer initializer, 
-                            IAutonomyObjectsManager autonomyManager, 
-                            IEventManager eventManager,
-                            IGameSceneRepository gameScene,
-                            IAiController aiController
+    public class GameLoop(  
+        IGameConfig config, 
+        ICollisionManager collisionManager, 
+        IGameRender renderer, 
+        IGameController controller, 
+        IGameInitializer initializer, 
+        IAutonomyObjectsManager autonomyManager, 
+        IGameSceneRepository gameScene,
+        IAiController aiController
         ) : IGameLoop
     {
         private readonly IGameConfig config = config;
@@ -26,22 +25,24 @@ namespace Ruguelike.GameCore.GameLoop
         private readonly IGameController controller = controller;
         private readonly IGameInitializer initializer = initializer;
         private readonly IAutonomyObjectsManager autonomyObjectsManager = autonomyManager;
-        private readonly IEventManager eventManager = eventManager;
         private readonly IGameSceneRepository sceneRepository = gameScene;
         private readonly IAiController aiController = aiController;
 
         public void Run()
         {
-            eventManager.UpdateSenders();
+            initializer.Init();
+
             while (!config.GameOver)
             {
                 CheckGameOver();
                 CheckFinished();
 
                 renderer.Render();
+
                 autonomyObjectsManager.UpdateAll();
 
                 var key = Console.ReadKey(true).Key;
+
                 controller.ProcessInput(key);
                 aiController.AllActions();
             }
@@ -50,25 +51,19 @@ namespace Ruguelike.GameCore.GameLoop
         
         private void CheckFinished() 
         {
-            if (collisionManager.CheckCollision(config.PlayerId, config.FinishId)){
+            if (collisionManager.CheckCollision(config.PlayerId, config.FinishId))
                 initializer.Init();
-                eventManager.UpdateSenders();
-            }
         }
         private void CheckGameOver()
         {
             var player = sceneRepository.FindById(config.PlayerId);
 
-            if (player == null) { 
+            if (player == null)  
                 return; 
-            }
-            if (!player.Alive) {
+            
+            if (!player.Alive) 
                 config.ChangeGameStatus();
-            }
         }
-        private static void OnGameOver()
-        {
-            Console.WriteLine("Игра завершена! Поставьте 5 звезд в убер, пожалуйста!");
-        }
+        private static void OnGameOver() => Console.WriteLine("Игра завершена! Поставьте 5 звезд в убер, пожалуйста!");
     }
 }

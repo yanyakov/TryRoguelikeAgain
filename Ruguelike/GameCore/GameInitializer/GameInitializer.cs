@@ -1,17 +1,27 @@
 ﻿using Ruguelike.API;
 using Ruguelike.CustomStructures;
 using Ruguelike.EntityGenerators;
+using Ruguelike.GameCore.EventManager;
 using Ruguelike.GameObjects;
 using Ruguelike.GameSceneRepository;
 using Ruguelike.MazeGenerator;
 
 namespace Ruguelike.GameCore.GameInitializer
 {
-    public class GameInitializer(IGameConfig config, IGameSceneRepository gameScene, IPrototypeFactory factory) : IGameInitializer
+    public class GameInitializer(IGameConfig config, 
+                                 IGameSceneRepository gameScene, 
+                                 IPrototypeFactory factory, 
+                                 IMazeGenerator mazeGenerator, 
+                                 IEntityGenerator entityGenerator,
+                                 IEventManager eventManager
+        ) : IGameInitializer
     {
         private readonly IGameConfig config = config;
         private readonly IGameSceneRepository gameScene = gameScene;
         private readonly IPrototypeFactory factory = factory;
+        private readonly IMazeGenerator mazeGenerator = mazeGenerator;
+        private readonly IEntityGenerator entityGenerator = entityGenerator;
+        private readonly IEventManager eventManager = eventManager;
 
         public void Init()
         {
@@ -26,11 +36,10 @@ namespace Ruguelike.GameCore.GameInitializer
             gameScene.Add(finish);
             config.SetFinishId(finish.Id);
 
-            IMazeGenerator mazeGenerator = new MazeGenerator.MazeGenerator(config, gameScene, factory);
             mazeGenerator.Generate();
+            entityGenerator.Generate(config.ZombieNum, config.ZombieNum);
 
-            IEntityGenerator entityGenerator = new EntityGenerator(config, gameScene, factory);
-            entityGenerator.Generate(5, 5);
+            eventManager.UpdateSenders();
         }
     }
 }

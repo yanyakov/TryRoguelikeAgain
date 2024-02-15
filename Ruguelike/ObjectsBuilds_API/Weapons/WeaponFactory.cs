@@ -8,11 +8,9 @@ namespace Ruguelike.ObjectsBuilds_API.Weapons
 {
     public class WeaponFactory : IWeaponFactory
     {
-        public IWeapon CreateSword()
-        {
-            return new Weapon(
+        public IWeapon CreateSword() => 
+            new Weapon(
                 "Sword",
-                20,
                 (attacker, target) =>
                 {
                     target.TakeDamage(20);
@@ -26,13 +24,11 @@ namespace Ruguelike.ObjectsBuilds_API.Weapons
                     return isNearby && isNotOnPlayerPosition && isAlive;
                 }
             );
-        }
+        
 
-        public IWeapon CreatePistol()
-        {
-            return new Weapon(
+        public IWeapon CreatePistol() => 
+            new Weapon(
                 "Pistol",
-                15,
                 (attacker, target) =>
                 {
                     var direction = new Position(
@@ -41,7 +37,7 @@ namespace Ruguelike.ObjectsBuilds_API.Weapons
                     );
                     var bulletStartPosition = attacker.Position + direction;
 
-                    attacker.Weapon.Shoot(bulletStartPosition, "Bullet");
+                    attacker.Shoot(bulletStartPosition, "Bullet");
                 },
                 playerPosition => gameObject =>
                 {
@@ -58,6 +54,5 @@ namespace Ruguelike.ObjectsBuilds_API.Weapons
                     return isOnSameLine && isWithinDistance;
                 }
             );
-        }
     }
 }

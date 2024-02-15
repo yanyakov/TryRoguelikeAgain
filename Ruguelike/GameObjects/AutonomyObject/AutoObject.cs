@@ -8,12 +8,12 @@ namespace Ruguelike.GameObjects.AutonomyObject
     {
         private BaseStats stats = new(sprite, title, position, passable);
 
-        public Guid Id => stats.Id;
-        public string Title => stats.Title;
-        public char Sprite { get => stats.Sprite; set => stats.Sprite = value; }
+        public Guid Id { get => stats.Id; }
+        public string Title { get => stats.Title; }
+        public char Sprite { get => stats.Sprite; private set => stats.Sprite = value; }
         public Position Position { get => stats.Position; set => stats.Position = value; }
-        public bool Passable { get => stats.Passable; set => stats.Passable = value; }
-        public bool Alive { get => stats.Alive; set => stats.Alive = value; }
+        public bool Passable { get => stats.Passable; private set => stats.Passable = value; }
+        public bool Alive { get => stats.Alive; private set => stats.Alive = value; }
 
         public Dictionary<string, object> CustomProperties { get; } = [];
         private readonly List<(Func<IGameSceneRepository, IAutoObject, Func<IGameObject, bool>, int> Action, Func<IGameObject, bool> Condition)> stageActions = [];
@@ -43,14 +43,13 @@ namespace Ruguelike.GameObjects.AutonomyObject
         public IGameObject CloneWithNewPosition(Position newPosition)
         {
             var clonedObject = new AutoObject(stats.Sprite, stats.Title, newPosition, stats.Passable);
+            
             foreach (var action in stageActions)
-            {
                 clonedObject.AddStageAction(action.Action, action.Condition);
-            }
+            
             foreach (var property in CustomProperties)
-            {
                 clonedObject.AddCustomProperty(property.Key, property.Value);
-            }
+            
             return clonedObject;
         }
 

@@ -13,7 +13,8 @@ namespace Ruguelike.GameCore.GameController
 
         public void ProcessInput(ConsoleKey key)
         {
-            if (gameScene.FindById(config.PlayerId) is not IDynamicObject player) return;
+            if (gameScene.FindById(config.PlayerId) is not IDynamicObject player) 
+                return;
 
             Direction? direction = key switch
             {
@@ -25,19 +26,16 @@ namespace Ruguelike.GameCore.GameController
             };
 
             if (direction.HasValue)
-            {
                 player.Move(direction.Value, collisionManager.CanMove);
-            }
 
             if (key == ConsoleKey.Spacebar)
             {
-                var target = gameScene.GameObjects(player.GetTargetPredicate())
-                             .OfType<IDynamicObject>().FirstOrDefault();
+                var target = gameScene.GameObjects(player.GetTargetPredicate()).OfType<IDynamicObject>().FirstOrDefault();
 
-                if (target != null)
-                {
-                    player.Attack(target);
-                }
+                if (target == null)
+                    return;
+
+                player.Attack(target);
             }
         }
     }

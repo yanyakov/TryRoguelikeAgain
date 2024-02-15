@@ -11,42 +11,32 @@ namespace Ruguelike.GameCore.EventManager
         private HashSet<IDynamicObject> subscribedObjects = [];
 
 
-        public void SubscribeToShoot(Action<Position, string> subscriber)
-        {
-            onShootSubscription += subscriber;
-        }
+        public void SubscribeToShoot(Action<Position, string> subscriber) => onShootSubscription += subscriber;
 
-        public void UnsubscribeFromShoot(Action<Position, string> subscriber)
-        {
-            onShootSubscription -= subscriber;
-        }
+        public void UnsubscribeFromShoot(Action<Position, string> subscriber) => onShootSubscription -= subscriber;
 
-        public void DispatchShoot(Position position, string bulletPrototypeName)
-        {
-            onShootSubscription?.Invoke(position, bulletPrototypeName);
-        }
+        private void DispatchShoot(Position position, string bulletPrototypeName) => onShootSubscription?.Invoke(position, bulletPrototypeName);
 
         public void UpdateSenders()
         {
             var currentDynamicObjects = new HashSet<IDynamicObject>(gameSceneRepository.GameObjects(obj => obj is IDynamicObject).Cast<IDynamicObject>());
 
             foreach (var oldObject in subscribedObjects.Except(currentDynamicObjects))
-            {
-                if (oldObject.Weapon != null)
-                {
-                    oldObject.Weapon.OnShoot -= DispatchShoot;
-                }
-            }
+                oldObject.OnShoot -= DispatchShoot;
 
             foreach (var newObject in currentDynamicObjects.Except(subscribedObjects))
-            {
-                if (newObject.Weapon != null)
-                {
-                    newObject.Weapon.OnShoot += DispatchShoot;
-                }
-            }
+                newObject.OnShoot += DispatchShoot;
 
             subscribedObjects = currentDynamicObjects;
         }
+        private void Dispose()
+        {
+            foreach (var obj in subscribedObjects)
+                obj.OnShoot -= DispatchShoot;
+           
+            subscribedObjects.Clear();
+        }
+
+        ~EventManager() => Dispose();
     }
 }

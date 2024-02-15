@@ -7,12 +7,7 @@ namespace Ruguelike.GameCore.CollisionManager
     {
         private readonly IGameSceneRepository gameScene = gameScene;
 
-        public bool CanMove(Position position)
-        {
-            var objects = gameScene.GameObjects(obj => obj.Position.Equals(position));
-
-            return !objects.Any(obj => !obj.Passable);
-        }
+        public bool CanMove(Position position) => gameScene.GameObjects(obj => obj.Position.Equals(position)).All(obj => obj.Passable);
 
         public bool CheckCollision(Guid object1Id, Guid object2Id)
         {

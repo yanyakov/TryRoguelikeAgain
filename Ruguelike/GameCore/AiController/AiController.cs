@@ -19,14 +19,12 @@ namespace Ruguelike.GameCore.AiController
             foreach (var dynamicObject in dynamicObjects)
             {
                 if (TryAttackTarget(dynamicObject))
-                {
                     continue;
-                }
 
                 TryMoveRandomly(dynamicObject);
             }
         }
-
+        
         private bool TryAttackTarget(IDynamicObject attacker)
         {
             var target = gameScene.GameObjects(obj => obj.Id == gameConfig.PlayerId && attacker.GetTargetPredicate()(obj)).FirstOrDefault();

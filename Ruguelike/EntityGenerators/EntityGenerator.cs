@@ -32,9 +32,7 @@ namespace Ruguelike.EntityGenerators
                 {
                     var position = new Position(x, y);
                     if (!allObjects.Any(obj => obj.Position == position))
-                    {
                         emptyCells.Add(position);
-                    }
                 }
             }
 

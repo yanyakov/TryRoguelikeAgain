@@ -4,6 +4,7 @@ using Ruguelike.GameObjects.AutonomyObject;
 using Ruguelike.GameObjects.DynamicObject;
 using Ruguelike.GameObjects.StaticObject;
 using Ruguelike.ObjectsBuilds_API.Weapons;
+using System.Dynamic;
 
 namespace Ruguelike.API
 {
@@ -23,9 +24,9 @@ namespace Ruguelike.API
             prototypes["Wall"] = new StaticObject('#', "Wall",new Position(0, 0), false);
             prototypes["Finish"] = new StaticObject('F', "Finish", new Position(0, 0), true);
 
-            prototypes["Player"] = new DynamicObject('P', "Player", new Position(0, 0), true, 100, weaponFactory.CreatePistol());
-            prototypes["Zombie"] = new DynamicObject('Z', "Zombie", new Position(0, 0), true, 100, weaponFactory.CreateSword());
-            prototypes["Archer"] = new DynamicObject('A', "Archer", new Position(0, 0), true, 50, weaponFactory.CreatePistol());
+            prototypes["Player"] = new GameObjects.DynamicObject.DynamicObject('P', "Player", new Position(0, 0), true, 100, weaponFactory.CreatePistol());
+            prototypes["Zombie"] = new GameObjects.DynamicObject.DynamicObject('Z', "Zombie", new Position(0, 0), true, 100, weaponFactory.CreateSword());
+            prototypes["Archer"] = new GameObjects.DynamicObject.DynamicObject('A', "Archer", new Position(0, 0), true, 50, weaponFactory.CreatePistol());
 
             prototypes["Bullet"] = new AutoObject('*', "Bullet", new Position(0, 0), true)
                 .AddStageAction((gameScene, self, condition) => {
@@ -52,7 +53,7 @@ namespace Ruguelike.API
                     }
 
                     var nextPosition = self.Position + initialDirection;
-                    var nextObject = gameScene.GameObjects(obj => obj.Position == nextPosition).FirstOrDefault();
+                    var nextObject = gameScene.GameObjects(obj => obj.Position == nextPosition && obj.Alive).FirstOrDefault();
                     if (nextObject != null)
                     {
                         if (nextObject is IDynamicObject target)
@@ -70,9 +71,8 @@ namespace Ruguelike.API
         public IGameObject Create(string prototypeKey, Position position)
         {
             if (!prototypes.TryGetValue(prototypeKey, out IGameObject? value))
-            {
                 throw new ArgumentException($"Нет такого прототипа '{prototypeKey}'");
-            }
+            
             return value.CloneWithNewPosition(position);
         }
     }
